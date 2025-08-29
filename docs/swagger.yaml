@@ -1,0 +1,41 @@
+definitions:
+  schemas.StockSchema:
+    properties:
+      data_inicio:
+        type: string
+      ticker:
+        type: string
+    required:
+    - ticker
+    type: object
+info:
+  contact: {}
+paths:
+  /stocks:
+    get:
+      consumes:
+      - application/json
+      description: A consulta retorna um json com o maior preco unitário e volume
+        máximo de ativo negociado por ativoco unitário e volume máximo de ativo negociado
+        por ativo
+      parameters:
+      - description: ativo
+        in: query
+        name: ticker
+        required: true
+        type: string
+      - description: Data negócio no formato yyyy-mm-dd
+        in: query
+        name: data_inicio
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.StockSchema'
+      summary: Consulta de dados agregados por ativo
+      tags:
+      - Stock
+swagger: "2.0"

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    env_file: .env
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - "8080:8080"
+    command: ["sh","-c", "make swag && /app/cmd/api/api"]
+    depends_on:
+      - db
+  
+  cli:
+    build: .
+    env_file: .env
+    command: ["sh","-c", "make migrate && /app/cmd/cli/cli"]
+    depends_on:
+      - db
+    volumes:
+      - ./files:/app/files
+      - ./migrations:/app/migrations
+
+volumes:
+  pgdata:
