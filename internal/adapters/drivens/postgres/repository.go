@@ -36,8 +36,6 @@ func (r *repository) BulkInsert(batch []*domain.Stock) error {
 	query := `
     INSERT INTO stocks (ticker, trade_date, trade_price, volume, closing_time)
     VALUES %s
-    ON CONFLICT (ticker, trade_date, trade_price, volume, closing_time)
-    DO UPDATE SET ticker = EXCLUDED.ticker, trade_date = EXCLUDED.trade_date, trade_price = EXCLUDED.trade_price, volume = EXCLUDED.volume, closing_time = EXCLUDED.closing_time
   `
 	values := []any{}
 	placeholders := []string{}
@@ -108,4 +106,56 @@ func (r *repository) RefreshStockSummaryMeterializedView() error {
 		return fmt.Errorf("failed to refresh materialied view: %w", err)
 	}
 	return nil
+}
+
+func (r *repository) SaveStockFile(name string) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+	query := `
+    INSERT INTO stock_files (name)
+    VALUES ($1)
+  `
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Query(name)
+	if err != nil {
+		fmt.Printf("error inserting file %v \n", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit: %w", err)
+	}
+	return nil
+}
+
+func (r *repository) IsProcessed(name string) (bool, error) {
+	query := `
+    select id from stock_files
+    where name = $1
+    limit 1;
+    `
+	stmt, err := r.db.Prepare(query)
+	if err != nil {
+		return false, fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	var fileID int64
+	row := stmt.QueryRow(name)
+	err = row.Scan(&fileID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		} else {
+			return false, fmt.Errorf("error scanning row: %w", err)
+		}
+	}
+	return true, nil
 }

@@ -12,6 +12,10 @@ Esse projeto realiza ingestão, o processamento e a exposição de dados agregad
 ## Arquitetura do projeto
 Para organização lógica e de pastas me inspirei nos projetos que já trabalho e que usam arquitetura hexagonal, mas não segui totalmente pois esse desafio não necessitava.
 
+O aplicação  tem duas tabelas, a tabela ```stocks``` com os dados do ativos baixados dos arquivos e a tabela ```stock_files```, tabela onde ficam registrados os arquivos já processados.
+Existe também  uma view materializada baseada na tabela de ```stocks``` chamada ```stock_summary```. Essa view materializada é usada no endpoint de consulta, melhorando bastante a sua performance.
+
+### Estrutura do projeto
 - `internal/`: Código da aplicação
   - `services/`: Diretório onde fica a camada de serviço.
   - `infra/`: Diretório onde ficam os pacotes de infraestrutura, por exemplo configuração
@@ -35,6 +39,12 @@ exigidos no desafio.
 Para rodar a aplicação você precisar ter o ```Docker``` e o ```Docker Compose``` instalados.
 O projeto usa o ```make``` também para consolidar os principais comandos.
 
+É preciso que os arquivos a serem importados estejam na pasta ```files``` na raiz do projeto e no formato e com extensao csv.
+
+Eu já mandei o .env com as variáveis de ambiente que são utilizadas no projeto.
+
+obs: Mesmo que tenha mandado dados de um ambiente local e que você não precise ajustar os valores para o seu ambiente, só se quiseres, não é recomendado fazer isso em ambiente produtivo visto o risco de alguém acabar subindo credenciais verdadeiras para o repositório.
+
 ### Rodando a Ingestao de Stocks
 
 Existe um diretório chamado ```files``` onde devem ficar os arquivos a serem importados.
@@ -47,6 +57,7 @@ $ make run-ingest
 
 Isso vai rodar o ```cli``` e executar o processo de ingestão dos arquivos que estão no diretório ```files```.
 Lembrando que essa importação acontece de forma paralela com goroutines + worker pool.
+
 
 ### Rodando a interface de consulta HTTP REST.
 

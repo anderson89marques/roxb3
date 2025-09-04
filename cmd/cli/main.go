@@ -2,15 +2,12 @@
 package main
 
 import (
-	"fmt"
-
 	database "github.com/anderson89marques/roxb3/internal/adapters/drivens/postgres"
 	"github.com/anderson89marques/roxb3/internal/infra/config"
 	services "github.com/anderson89marques/roxb3/internal/services"
 )
 
 func main() {
-	fmt.Println("Hello World")
 	err := config.ParseEnv()
 	if err != nil {
 		panic(err)

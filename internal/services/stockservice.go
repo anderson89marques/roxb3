@@ -57,7 +57,7 @@ func (s *StockService) IngestData() error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Files to be processed: %+v \n", files)
+	fmt.Printf("Files founded: %+v \n", files)
 
 	// Create worker pool
 	s.stockChan = make(chan []*domain.Stock, s.conf.NumWorkers)
@@ -74,7 +74,24 @@ func (s *StockService) IngestData() error {
 	}
 
 	for _, fileName := range files {
+		isProcessed, err := s.repo.IsProcessed(fileName)
+		if err != nil {
+			fmt.Printf("error to consult information about stock file %s: %s. This file will not be processed.", fileName, err.Error())
+			continue
+		}
+
+		if isProcessed {
+			fmt.Printf("file %s already processed. skipping...\n", fileName)
+			continue
+		}
+
+		fmt.Printf("stock file %s info not found in database, this file will be processed.", fileName)
 		err = s.ProcessStockFile(fileName)
+		if err != nil {
+			panic(err)
+		}
+
+		err = s.repo.SaveStockFile(fileName)
 		if err != nil {
 			panic(err)
 		}
@@ -137,12 +154,11 @@ func (s *StockService) ProcessStockFile(fileName string) error {
 		s.stockChan <- batch
 	}
 
-	fmt.Printf("Total: %d\n", cont)
+	fmt.Printf("File %s total lines is %d\n", fileName, cont)
 	return nil
 }
 
 func (s *StockService) InsertBatch(batch []*domain.Stock) error {
-	// fmt.Printf("InsertBatch Size: %d\n", len(batch))
 	if err := s.repo.BulkInsert(batch); err != nil {
 		return err
 	}

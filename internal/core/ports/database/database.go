@@ -10,4 +10,6 @@ type Repository interface {
 	BulkInsert([]*domain.Stock) error
 	Search(*schemas.StockSchema) (*domain.StockSummary, error)
 	RefreshStockSummaryMeterializedView() error
+	SaveStockFile(name string) error
+	IsProcessed(name string) (bool, error)
 }
