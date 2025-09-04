@@ -10,7 +10,7 @@ Esse projeto realiza ingestão, o processamento e a exposição de dados agregad
 - Docker
 
 ## Arquitetura do projeto
-Para organização lógica e de pastas me inspirei nos projetos que já trabalho e que usam arquitetura hexagonal, mas não segui totalmente pois esse desafio não necessitava.
+Para organização lógica e de pastas me inspirei nos projetos que já trabalho e que usam arquitetura hexagonal.
 
 O aplicação  tem duas tabelas, a tabela ```stocks``` com os dados do ativos baixados dos arquivos e a tabela ```stock_files```, tabela onde ficam registrados os arquivos já processados.
 Existe também  uma view materializada baseada na tabela de ```stocks``` chamada ```stock_summary```. Essa view materializada é usada no endpoint de consulta, melhorando bastante a sua performance.

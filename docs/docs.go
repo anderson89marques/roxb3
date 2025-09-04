@@ -47,7 +47,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.StockSchema"
+                            "$ref": "#/definitions/domain.StockSummary"
                         }
                     }
                 }
@@ -55,14 +55,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "schemas.StockSchema": {
+        "domain.StockSummary": {
             "type": "object",
             "required": [
+                "max_daily_volume",
+                "max_range_value",
                 "ticker"
             ],
             "properties": {
-                "data_inicio": {
-                    "type": "string"
+                "max_daily_volume": {
+                    "type": "number"
+                },
+                "max_range_value": {
+                    "type": "number"
                 },
                 "ticker": {
                     "type": "string"

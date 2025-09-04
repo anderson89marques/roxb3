@@ -10,8 +10,8 @@ COPY . .
 
 RUN GOOS=linux \
     go install github.com/swaggo/swag/cmd/swag@latest \
-    && go mod download
-#    && swag init ./cmd/api/main.go -o docs --parseDependency --parseInternal
+    && go mod download \
+    && swag init ./cmd/api/main.go -o docs --parseDependency --parseInternal
 
 # Build API executable
 RUN go build -o /app/cmd/api/api ./cmd/api/main.go
